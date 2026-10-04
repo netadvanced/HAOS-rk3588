@@ -344,6 +344,9 @@ jobs:
           command: make
 
       - name: Check Linux config
+        # kconfiglib cannot parse "depends on X if Y" used by kernel 7.3-rc5,
+        # which made this step crash and skip the artifact uploads.
+        continue-on-error: true
         uses: "./.github/actions/haos-builder-command"
         with:
           image: ${{ needs.prepare.outputs.build_container_image }}
