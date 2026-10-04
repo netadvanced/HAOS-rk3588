@@ -22,6 +22,8 @@ categories:
     label: 'board/generic-aarch64'
   - title: 'Rock 5B'
     label: 'board/rock5b'
+  - title: 'Rock 5A'
+    label: 'board/radxa/rock5a'
   - title: 'Documentation'
     label: 'documentation'
   - title: 'Build System'
