@@ -4,5 +4,11 @@
     "defconfig": "rock5b",
     "architecture": "aarch64",
     "label": "board/radxa/rock5b"
+  },
+  {
+    "id": "rock5a",
+    "defconfig": "rock5a",
+    "architecture": "aarch64",
+    "label": "board/radxa/rock5a"
   }
 ]
