@@ -356,6 +356,11 @@ jobs:
           path: |
             output/images/haos_*.img.xz
             output/images/haos_*.raucb
+            output/build/uboot-v2026.07/u-boot-rockchip-spi.bin
+            output/build/mesa3d-26.1.8/buildroot-build/src/gallium/targets/teflon
+            output/build/ffmpeg-custom-b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935/ffmpeg
+            output/build/ffmpeg-custom-b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935/ffplay
+            output/build/ffmpeg-custom-b57fbbe50c9b2656fad86a1a7eeabfd2b2a50935/ffprobe
           if-no-files-found: error
 
       - name: Generate build summary
