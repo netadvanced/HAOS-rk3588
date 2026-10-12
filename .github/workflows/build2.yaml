@@ -323,27 +323,27 @@ jobs:
           name: signing-key
 
       - name: Generate build config
-        uses: "./.github/actions/haos-builder-command"
+        uses: "./.github/actions/haos-builder-command2"
         with:
           image: ${{ needs.prepare.outputs.build_container_image }}
           command: make ${{ matrix.board.defconfig }}_defconfig
 
       - name: Override release channel
         if: ${{ needs.prepare.outputs.hassio_channel_option != 'BR2_PACKAGE_HASSIO_CHANNEL_STABLE' }}
-        uses: "./.github/actions/haos-builder-command"
+        uses: "./.github/actions/haos-builder-command2"
         with:
           image: ${{ needs.prepare.outputs.build_container_image }}
           command: |
             bash -c 'echo "${{ needs.prepare.outputs.hassio_channel_option }}=y" >> /build/output/.config && make olddefconfig'
 
       - name: Build
-        uses: "./.github/actions/haos-builder-command"
+        uses: "./.github/actions/haos-builder-command2"
         with:
           image: ${{ needs.prepare.outputs.build_container_image }}
           command: make
 
       - name: Check Linux config
-        uses: "./.github/actions/haos-builder-command"
+        uses: "./.github/actions/haos-builder-command2"
         with:
           image: ${{ needs.prepare.outputs.build_container_image }}
           command: |
