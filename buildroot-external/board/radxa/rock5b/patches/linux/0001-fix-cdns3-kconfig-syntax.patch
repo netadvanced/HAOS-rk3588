@@ -1,6 +1,0 @@
-diff --git a/drivers/usb/cdns3/Kconfig b/drivers/usb/cdns3/Kconfig
---- a/drivers/usb/cdns3/Kconfig
-+++ b/drivers/usb/cdns3/Kconfig
-@@
--	depends on USB if !USB_GADGET
-+	depends on USB && !USB_GADGET
