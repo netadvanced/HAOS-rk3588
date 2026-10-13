@@ -1,0 +1,33 @@
+*** Begin Patch
+*** Add File: buildroot-external/board/radxa/rock5b/patches/linux/0002-fix-cdns3-kconfig-conditional.patch
++From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
++From: HAOS-build-fix <haos-bot@example.com>
++Date: Tue, 13 Oct 2026 00:00:00 +0000
++Subject: [PATCH] Kconfig: fix conditional depends/visibility for cdns3
++
++Kconfig does not allow "depends on ... if ..." syntax. Replace several
++conditional depends lines with a single valid boolean depends expression
++and move visibility conditions to the config header so the option is only
++shown when appropriate.
++
++Signed-off-by: HAOS-build-fix <haos-bot@example.com>
++
+*** End Patch
++
+*** Begin Patch
+*** Update File: drivers/usb/cdns3/Kconfig
+@@
+-config USB_CDNS_SUPPORT
+-    tristate "Cadence USB Support"
+-    depends on USB_SUPPORT && HAS_DMA
+-    depends on USB || USB_GADGET
+-    depends on USB if !USB_GADGET
+-    depends on USB_GADGET if !USB
+-    select USB_XHCI_PLATFORM if USB_XHCI_HCD
+-    select USB_ROLE_SWITCH
++config USB_CDNS_SUPPORT
++    tristate "Cadence USB Support" if USB || USB_GADGET
++    depends on USB_SUPPORT && HAS_DMA && (USB || USB_GADGET)
++    select USB_XHCI_PLATFORM if USB_XHCI_HCD
++    select USB_ROLE_SWITCH
+*** End Patch
