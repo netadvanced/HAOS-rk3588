@@ -1,4 +1,5 @@
 diff --git a/drivers/usb/cdns3/Kconfig b/drivers/usb/cdns3/Kconfig
+index 111111111111..222222222222 100644
 --- a/drivers/usb/cdns3/Kconfig
 +++ b/drivers/usb/cdns3/Kconfig
 @@ -2,8 +2,10 @@
