@@ -1,3 +1,4 @@
+diff --git a/drivers/usb/cdns3/Kconfig b/drivers/usb/cdns3/Kconfig
 --- a/drivers/usb/cdns3/Kconfig
 +++ b/drivers/usb/cdns3/Kconfig
 @@
