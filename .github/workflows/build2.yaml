@@ -56,7 +56,7 @@ jobs:
       - uses: runsascoded/update-submodules@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: rock5b       # branche à mettre à jour
+          branch: rock5b-dev       # branche à mettre à jour
           refs: submodule1=buildroot
   prepare:
     name: Prepare build
