@@ -1,4 +1,4 @@
-config BR2_PACKAGE_FFMPEG_CUSTOM_ARCH_SUPPORTS
+config BR2_PACKAGE_ROCKCHIP_MPP_ARCH_SUPPORTS
 	bool
 	default y
 	# No support for ARMv7-M in the ARM assembly logic
@@ -13,9 +13,9 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_ARCH_SUPPORTS
 	# assertion fail in binutils
 	depends on !(BR2_or1k && !BR2_TOOLCHAIN_GCC_AT_LEAST_9)
 
-menuconfig BR2_PACKAGE_FFMPEG_CUSTOM
+menuconfig BR2_PACKAGE_ROCKCHIP_MPP
 	bool "ffmpeg-custom"
-	depends on BR2_PACKAGE_FFMPEG_CUSTOM_ARCH_SUPPORTS
+	depends on BR2_PACKAGE_ROCKCHIP_MPP_ARCH_SUPPORTS
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_PACKAGE_LIBDRM
 	help
@@ -24,21 +24,21 @@ menuconfig BR2_PACKAGE_FFMPEG_CUSTOM
 
 	  https://www.ffmpeg.org
 
-if BR2_PACKAGE_FFMPEG_CUSTOM
+if BR2_PACKAGE_ROCKCHIP_MPP
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_GPL
+config BR2_PACKAGE_ROCKCHIP_MPP_GPL
 	bool "Enable GPL code"
 	help
 	  allow use of GPL code, the resulting libs and binaries will
 	  be under GPL
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_NONFREE
+config BR2_PACKAGE_ROCKCHIP_MPP_NONFREE
 	bool "Enable nonfree code"
 	help
 	  allow use of nonfree code, the resulting libs and binaries
 	  will be unredistributable
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_FFMPEG
+config BR2_PACKAGE_ROCKCHIP_MPP_FFMPEG
 	bool "Build ffmpeg (the command line application)"
 	default y
 	help
@@ -48,10 +48,10 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_FFMPEG
 	  It is not needed if you want to link the FFmpeg libraries
 	  to your application.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_FFPLAY
+config BR2_PACKAGE_ROCKCHIP_MPP_FFPLAY
 	bool "Build ffplay"
 	depends on !BR2_STATIC_LIBS # sdl2
-	select BR2_PACKAGE_FFMPEG_CUSTOM_SWSCALE
+	select BR2_PACKAGE_ROCKCHIP_MPP_SWSCALE
 	select BR2_PACKAGE_SDL2
 	help
 	  FFplay is a very simple and portable media player using the
@@ -61,25 +61,25 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_FFPLAY
 comment "ffplay needs a toolchain w/ dynamic library"
 	depends on BR2_STATIC_LIBS
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_FFPROBE
+config BR2_PACKAGE_ROCKCHIP_MPP_FFPROBE
 	bool "Build ffprobe"
 	help
 	  FFprobe is a utility to determine the audio and video
 	  characteristics of a container file.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_XCBGRAB
+config BR2_PACKAGE_ROCKCHIP_MPP_XCBGRAB
 	bool "Build X11 screen grabbing"
 	depends on BR2_PACKAGE_XORG7
 	select BR2_PACKAGE_LIBXCB
 	help
 	  X11 screen grabbing using libxcb.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_SWSCALE
+config BR2_PACKAGE_ROCKCHIP_MPP_SWSCALE
 	bool "Build libswscale"
 	help
 	  Swscale is a library of video scaling routines.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_ENCODERS
+config BR2_PACKAGE_ROCKCHIP_MPP_ENCODERS
 	string "Enabled encoders"
 	default "all"
 	help
@@ -89,7 +89,7 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_ENCODERS
 	  Run ./configure --list-encoders in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_DECODERS
+config BR2_PACKAGE_ROCKCHIP_MPP_DECODERS
 	string "Enabled decoders"
 	default "all"
 	help
@@ -99,7 +99,7 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_DECODERS
 	  Run ./configure --list-decoders in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_MUXERS
+config BR2_PACKAGE_ROCKCHIP_MPP_MUXERS
 	string "Enabled muxers"
 	default "all"
 	help
@@ -109,7 +109,7 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_MUXERS
 	  Run ./configure --list-muxers in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_DEMUXERS
+config BR2_PACKAGE_ROCKCHIP_MPP_DEMUXERS
 	string "Enabled demuxers"
 	default "all"
 	help
@@ -119,7 +119,7 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_DEMUXERS
 	  Run ./configure --list-demuxers in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_PARSERS
+config BR2_PACKAGE_ROCKCHIP_MPP_PARSERS
 	string "Enabled parsers"
 	default "all"
 	help
@@ -129,7 +129,7 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_PARSERS
 	  Run ./configure --list-parsers in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_BSFS
+config BR2_PACKAGE_ROCKCHIP_MPP_BSFS
 	string "Enabled bitstreams"
 	default "all"
 	help
@@ -139,7 +139,7 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_BSFS
 	  Run ./configure --list-bsfs in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_PROTOCOLS
+config BR2_PACKAGE_ROCKCHIP_MPP_PROTOCOLS
 	string "Enabled protocols"
 	default "all"
 	help
@@ -149,7 +149,7 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_PROTOCOLS
 	  Run ./configure --list-protocols in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_FILTERS
+config BR2_PACKAGE_ROCKCHIP_MPP_FILTERS
 	string "Enabled filters"
 	default "all"
 	help
@@ -159,15 +159,15 @@ config BR2_PACKAGE_FFMPEG_CUSTOM_FILTERS
 	  Run ./configure --list-filters in the ffmpeg sources
 	  directory to know the available options.
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_INDEVS
+config BR2_PACKAGE_ROCKCHIP_MPP_INDEVS
 	bool "Enable input devices"
 	default y
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_OUTDEVS
+config BR2_PACKAGE_ROCKCHIP_MPP_OUTDEVS
 	bool "Enable output devices"
 	default y
 
-config BR2_PACKAGE_FFMPEG_CUSTOM_EXTRACONF
+config BR2_PACKAGE_ROCKCHIP_MPP_EXTRACONF
 	string "Additional parameters for ./configure"
 	default ""
 	help
