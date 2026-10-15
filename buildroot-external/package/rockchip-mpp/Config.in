@@ -14,7 +14,7 @@ config BR2_PACKAGE_ROCKCHIP_MPP_ARCH_SUPPORTS
 	depends on !(BR2_or1k && !BR2_TOOLCHAIN_GCC_AT_LEAST_9)
 
 menuconfig BR2_PACKAGE_ROCKCHIP_MPP
-	bool "ffmpeg-custom"
+	bool "rockchip-mpp"
 	depends on BR2_PACKAGE_ROCKCHIP_MPP_ARCH_SUPPORTS
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	select BR2_PACKAGE_LIBDRM
@@ -176,5 +176,5 @@ config BR2_PACKAGE_ROCKCHIP_MPP_EXTRACONF
 
 endif
 
-comment "ffmpeg-custom needs a toolchain w/ threads"
+comment "rockchip-mpp needs a toolchain w/ threads"
 	depends on !BR2_TOOLCHAIN_HAS_THREADS
