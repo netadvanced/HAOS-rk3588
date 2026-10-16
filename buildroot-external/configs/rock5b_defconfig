@@ -339,5 +339,6 @@ BR2_PACKAGE_X264=y
 BR2_PACKAGE_X265=y
 BR2_PACKAGE_FFMPEG_CUSTOM2_GPL=y
 
-######## MPP fork & patched #####
+######## MPP & RGA fork & patched #####
 BR2_PACKAGE_ROCKCHIP_MPP=y
+BR2_PACKAGE_ROCKCHIP_RGA=y
