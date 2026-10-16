@@ -1,13 +1,15 @@
-ROCKCHIP_MPP_VERSION = 1.1.0
-ROCKCHIP_MPP_SITE = $(call github,rockchip-linux,mpp,$(ROCKCHIP_MPP_VERSION))
-ROCKCHIP_MPP_LICENSE = Apache-2.0, MIT
-ROCKCHIP_MPP_LICENSE_FILES = Apache-2.0 MIT
-ROCKCHIP_MPP_INSTALL_STAGING = YES
-ROCKCHIP_MPP_DEPENDENCIES = libdrm host-pkgconf
+################################################################################
+#
+# mpp
+#
+################################################################################
 
-ROCKCHIP_MPP_CONF_OPTS = \
-	-DRKPLATFORM=ON \
-	-DHAVE_DRM=ON \
-	-DBUILD_TEST=OFF
+MPP_VERSION = 1.1.0
+MPP_SITE = $(call github,rockchip-linux,mpp,$(MPP_VERSION))
+MPP_LICENSE = Apache-2.0, MIT
+MPP_LICENSE_FILES = Apache-2.0 MIT
+MPP_INSTALL_STAGING = YES
+
+MPP_CONF_OPTS = -DBUILD_TEST=OFF
 
 $(eval $(cmake-package))
