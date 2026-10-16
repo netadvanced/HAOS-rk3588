@@ -1,5 +1,7 @@
 config BR2_PACKAGE_ROCKCHIP_RGA
 	bool "rockchip-rga"
 	select BR2_PACKAGE_LIBDRM
-	  Rockchip Media Process Platform (RGA).
-	  https://github.com/rockchip-linux/rga
+	help
+	  Rockchip RGA (2D raster graphic acceleration) userspace library.
+
+	  https://github.com/tsukumijima/librga-rockchip
