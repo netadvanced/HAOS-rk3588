@@ -42,9 +42,11 @@ FFMPEG_CUSTOM2_CONF_OPTS = \
 	--disable-libvo-amrwbenc \
 	--disable-symver \
 	--disable-doc \
-	--enable-rkmpp
+	--enable-rkmpp \
+	--enable-rkrga
 
-#	--enable-rkrga
+FFMPEG_CUSTOM2_DEPENDENCIES += librga
+FFMPEG_CUSTOM2_DEPENDENCIES += libmpp
 
 FFMPEG_CUSTOM2_DEPENDENCIES += host-pkgconf
 
