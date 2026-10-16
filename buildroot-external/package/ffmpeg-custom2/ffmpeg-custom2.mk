@@ -49,7 +49,7 @@ FFMPEG_CUSTOM2_CONF_OPTS += --enable-rkmpp
 endif
 
 ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
-FFMPEG_CUSTOM2_DEPENDENCIES += librga
+FFMPEG_CUSTOM2_DEPENDENCIES += rockchip-rga
 FFMPEG_CUSTOM2_CONF_OPTS += --enable-rkrga
 endif
 
