@@ -12,4 +12,8 @@ ROCKCHIP_RGA_INSTALL_STAGING = YES
 
 ROCKCHIP_RGA_DEPENDENCIES = libdrm
 
+ROCKCHIP_RGA_CONF_OPTS = \
+	-Dlibdrm=true \
+	-Dlibrga_demo=false
+
 $(eval $(meson-package))
