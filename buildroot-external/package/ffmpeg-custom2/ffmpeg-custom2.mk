@@ -41,12 +41,17 @@ FFMPEG_CUSTOM2_CONF_OPTS = \
 	--disable-libilbc \
 	--disable-libvo-amrwbenc \
 	--disable-symver \
-	--disable-doc \
-	--enable-rkmpp \
-	--enable-rkrga
+	--disable-doc
 
-FFMPEG_CUSTOM2_DEPENDENCIES += librga
+ifeq ($(BR2_PACKAGE_ROCKCHIP_MPP),y)
 FFMPEG_CUSTOM2_DEPENDENCIES += libmpp
+FFMPEG_CUSTOM2_CONF_OPTS += --enable-rkmpp
+endif
+
+ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
+FFMPEG_CUSTOM2_DEPENDENCIES += librga
+FFMPEG_CUSTOM2_CONF_OPTS += --enable-rkrga
+endif
 
 FFMPEG_CUSTOM2_DEPENDENCIES += host-pkgconf
 
