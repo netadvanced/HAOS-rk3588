@@ -44,7 +44,7 @@ FFMPEG_CUSTOM2_CONF_OPTS = \
 	--disable-doc
 
 ifeq ($(BR2_PACKAGE_ROCKCHIP_MPP),y)
-FFMPEG_CUSTOM2_DEPENDENCIES += librockchip_mpp
+FFMPEG_CUSTOM2_DEPENDENCIES += rockchip-mpp
 FFMPEG_CUSTOM2_CONF_OPTS += --enable-rkmpp
 endif
 
