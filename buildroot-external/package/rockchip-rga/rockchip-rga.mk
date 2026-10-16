@@ -16,4 +16,11 @@ ROCKCHIP_RGA_CONF_OPTS = \
 	-Dlibdrm=true \
 	-Dlibrga_demo=false
 
+define ROCKCHIP_RGA_CLEAN_TARGET
+	rm -rf $(TARGET_DIR)/usr/include/rga
+	rm -f $(TARGET_DIR)/usr/lib/librga.a
+	rm -f $(TARGET_DIR)/usr/lib/pkgconfig/librga.pc
+endef
+ROCKCHIP_RGA_POST_INSTALL_TARGET_HOOKS += ROCKCHIP_RGA_CLEAN_TARGET
+
 $(eval $(meson-package))
