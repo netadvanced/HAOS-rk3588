@@ -1,16 +1,16 @@
 ################################################################################
 #
-# mpp
+# ROCKCHIP_MPP
 #
 ################################################################################
 
-MPP_VERSION = 1.1.0
-MPP_SITE = $(call github,rockchip-linux,mpp,$(MPP_VERSION))
-MPP_LICENSE = Apache-2.0, MIT
-MPP_LICENSE_FILES = SECURITY.md
-MPP_INSTALL_STAGING = YES
+ROCKCHIP_MPP_VERSION = 1.1.0
+ROCKCHIP_MPP_SITE = $(call github,rockchip-linux,mpp,$(ROCKCHIP_MPP_VERSION))
+ROCKCHIP_MPP_LICENSE = Apache-2.0, MIT
+ROCKCHIP_MPP_LICENSE_FILES = SECURITY.md
+ROCKCHIP_MPP_INSTALL_STAGING = YES
 
-MPP_CONF_OPTS = \
+ROCKCHIP_MPP_CONF_OPTS = \
 	-DBUILD_TEST=OFF \
 	-DCMAKE_STRIP=$(TARGET_STRIP)
 
