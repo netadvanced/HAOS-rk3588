@@ -18,9 +18,7 @@ It performs the initialization and then loads the boot configuration, boot scrip
 u-boot-rockchip-spi.bin is provided for that purpose on the Release page.
 It only contains the U-Boot bootloader (TPL, SPL and main).
 
-You will have to write it into the on board SPI flash of the Rock5b.
-You can find more details about this procedure in [Radxa online docs about the Rock5b](https://wiki.radxa.com/Rock5/install/spi)
-Tested with RKDevTool 2.96 & rk3588_spl_loader_v1.19.113.bin procedure on Windows
+For documentation explaining details of the individual supported boards, see [Board support](https://contributors.home-assistant.io/os/operating-system/boards/) section of the Home Assistant contributor docs.
 
 ## Upgrading
 
@@ -74,4 +72,27 @@ If there is an error during installation, run `journalctl -u rauc.service` to ge
 
 If you don't have experience with embedded systems, Buildroot or the build process for Linux distributions it is recommended to read up on these topics first (e.g. [Bootlin](https://bootlin.com/docs/) has excellent resources).
 
-The Home Assistant Operating System documentation can be found on the [Home Assistant Developer Docs website](https://developers.home-assistant.io/docs/operating-system).
+The Home Assistant Operating System documentation can be found on the [Home Assistant contributors website](https://contributors.home-assistant.io/os/operating-system/).
+
+### Components
+
+- **Bootloader:**
+  - [GRUB](https://www.gnu.org/software/grub/) for devices that support UEFI
+  - [U-Boot](https://www.denx.de/wiki/U-Boot) for devices that don't support UEFI
+- **Operating System:**
+  - [Buildroot](https://buildroot.org/) LTS Linux
+- **File Systems:**
+  - [SquashFS](https://www.kernel.org/doc/Documentation/filesystems/squashfs.txt) for read-only file systems (using LZ4 compression)
+  - [ZRAM](https://www.kernel.org/doc/Documentation/blockdev/zram.txt) for `/tmp`, `/var` and swap (using LZ4 compression)
+- **Container Platform:**
+  - [Docker Engine](https://docs.docker.com/engine/) for running Home Assistant components in containers
+- **Updates:**
+  - [RAUC](https://rauc.io/) for Over The Air (OTA) and USB updates
+- **Security:**
+  - [AppArmor](https://apparmor.net/) Linux kernel security module
+
+### Development builds
+
+The Development build GitHub Action Workflow is a manually triggered workflow
+which creates Home Assistant OS development builds. The development builds are
+available at [https://os-artifacts.home-assistant.io/index.html](https://os-artifacts.home-assistant.io/index.html).
