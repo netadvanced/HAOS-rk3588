@@ -1,0 +1,11 @@
+config BR2_PACKAGE_ROCKCHIP_MPP
+	bool "rockchip-mpp"
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	depends on BR2_aarch64 || BR2_arm
+	help
+	  Rockchip Media Process Platform (MPP).
+
+	  https://github.com/rockchip-linux/mpp
+
+comment "mpp needs a toolchain w/ threads"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS

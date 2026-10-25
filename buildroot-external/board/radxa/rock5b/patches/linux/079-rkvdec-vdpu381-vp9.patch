@@ -1,416 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Venkata Atchuta Bheemeswara Sarma Darbha <vdarbha0473@gmail.com>
-Date: Sun, 26 Jul 2026 15:25:34 -0500
-Subject: media: rkvdec: vp9: Changing get_ref_buf function name to
- get_ref_buf_vp9
-
-This change is in preparation for the upcoming commits and to denote
-that this function is not to be confused with the similar function
-found in rkvdec's hevc.
-
-Signed-off-by: Venkata Atchuta Bheemeswara Sarma Darbha <vdarbha0473@gmail.com>
-Tested-by: Igor Paunovic royalnet026@gmail.com
-Link: https://patch.msgid.link/20260726-b4-add-rkvdec2-vp9-vdpu381-v1-1-180fb2d1f10c@gmail.com
-Signed-off-by: Ricardo Pardini <ricardo@pardini.net>
----
- drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c
-index 111111111111..222222222222 100644
---- a/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c
-+++ b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c
-@@ -349,7 +349,7 @@ static void init_probs(struct rkvdec_ctx *ctx,
- }
- 
- static struct rkvdec_decoded_buffer *
--get_ref_buf(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *dst, u64 timestamp)
-+get_ref_buf_vp9(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *dst, u64 timestamp)
- {
- 	struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
- 	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
-@@ -489,12 +489,12 @@ static void config_registers(struct rkvdec_ctx *ctx,
- 
- 	dec_params = run->decode_params;
- 	dst = vb2_to_rkvdec_decoded_buf(&run->base.bufs.dst->vb2_buf);
--	ref_bufs[0] = get_ref_buf(ctx, &dst->base.vb, dec_params->last_frame_ts);
--	ref_bufs[1] = get_ref_buf(ctx, &dst->base.vb, dec_params->golden_frame_ts);
--	ref_bufs[2] = get_ref_buf(ctx, &dst->base.vb, dec_params->alt_frame_ts);
-+	ref_bufs[0] = get_ref_buf_vp9(ctx, &dst->base.vb, dec_params->last_frame_ts);
-+	ref_bufs[1] = get_ref_buf_vp9(ctx, &dst->base.vb, dec_params->golden_frame_ts);
-+	ref_bufs[2] = get_ref_buf_vp9(ctx, &dst->base.vb, dec_params->alt_frame_ts);
- 
- 	if (vp9_ctx->last.valid)
--		last = get_ref_buf(ctx, &dst->base.vb, vp9_ctx->last.timestamp);
-+		last = get_ref_buf_vp9(ctx, &dst->base.vb, vp9_ctx->last.timestamp);
- 	else
- 		last = dst;
- 
--- 
-Armbian
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Venkata Atchuta Bheemeswara Sarma Darbha <vdarbha0473@gmail.com>
-Date: Sun, 26 Jul 2026 15:25:35 -0500
-Subject: media: rkvdec: Move vp9 functions to common file
-
-Refactor common VP9 functions in preparation for adding the VDPU381
-variant
-
-Signed-off-by: Venkata Atchuta Bheemeswara Sarma Darbha <vdarbha0473@gmail.com>
-Tested-by: Igor Paunovic royalnet026@gmail.com
-Link: https://patch.msgid.link/20260726-b4-add-rkvdec2-vp9-vdpu381-v1-2-180fb2d1f10c@gmail.com
-Signed-off-by: Ricardo Pardini <ricardo@pardini.net>
----
- drivers/media/platform/rockchip/rkvdec/Makefile            |   1 +
- drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.c |  65 ++++++
- drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.h |  92 ++++++++
- drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c        | 113 +---------
- 4 files changed, 159 insertions(+), 112 deletions(-)
-
-diff --git a/drivers/media/platform/rockchip/rkvdec/Makefile b/drivers/media/platform/rockchip/rkvdec/Makefile
-index 111111111111..222222222222 100644
---- a/drivers/media/platform/rockchip/rkvdec/Makefile
-+++ b/drivers/media/platform/rockchip/rkvdec/Makefile
-@@ -12,4 +12,5 @@ rockchip-vdec-y += \
- 		   rkvdec-vdpu381-hevc.o \
- 		   rkvdec-vdpu383-h264.o \
- 		   rkvdec-vdpu383-hevc.o \
-+		   rkvdec-vp9-common.o \
- 		   rkvdec-vp9.o
-diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.c b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.c
-new file mode 100644
-index 000000000000..111111111111
---- /dev/null
-+++ b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.c
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Rockchip video decoder VP9 common functions
-+ *
-+ * Copyright (C) 2019 Collabora, Ltd.
-+ *	Boris Brezillon <boris.brezillon@collabora.com>
-+ * Copyright (C) 2021 Collabora, Ltd.
-+ *	Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-+ *
-+ * Copyright (C) 2016 Rockchip Electronics Co., Ltd.
-+ *	Alpha Lin <Alpha.Lin@rock-chips.com>
-+ */
-+#include <linux/v4l2-common.h>
-+#include <media/v4l2-h264.h>
-+#include <media/v4l2-mem2mem.h>
-+
-+#include "rkvdec.h"
-+#include "rkvdec-vp9-common.h"
-+
-+void write_coeff_plane(const u8 coef[6][6][3], u8 *coeff_plane)
-+{
-+	unsigned int idx = 0, byte_count = 0;
-+	int k, m, n;
-+	u8 p;
-+
-+	for (k = 0; k < 6; k++) {
-+		for (m = 0; m < 6; m++) {
-+			for (n = 0; n < 3; n++) {
-+				p = coef[k][m][n];
-+				coeff_plane[idx++] = p;
-+				byte_count++;
-+				if (byte_count == 27) {
-+					idx += 5;
-+					byte_count = 0;
-+				}
-+			}
-+		}
-+	}
-+}
-+
-+struct rkvdec_decoded_buffer *
-+get_ref_buf_vp9(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *dst, u64 timestamp)
-+{
-+	struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
-+	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
-+	struct vb2_buffer *buf;
-+
-+	/*
-+	 * If a ref is unused or invalid, address of current destination
-+	 * buffer is returned.
-+	 */
-+	buf = vb2_find_buffer(cap_q, timestamp);
-+	if (!buf)
-+		buf = &dst->vb2_buf;
-+
-+	return vb2_to_rkvdec_decoded_buf(buf);
-+}
-+
-+void update_dec_buf_info(struct rkvdec_decoded_buffer *buf,
-+			 const struct v4l2_ctrl_vp9_frame *dec_params)
-+{
-+	buf->vp9.width = dec_params->frame_width_minus_1 + 1;
-+	buf->vp9.height = dec_params->frame_height_minus_1 + 1;
-+	buf->vp9.bit_depth = dec_params->bit_depth;
-+}
-diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.h b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.h
-new file mode 100644
-index 000000000000..111111111111
---- /dev/null
-+++ b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9-common.h
-@@ -0,0 +1,92 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Rockchip video decoder VP9 common functions
-+ *
-+ * Copyright (C) 2019 Collabora, Ltd.
-+ *	Boris Brezillon <boris.brezillon@collabora.com>
-+ * Copyright (C) 2021 Collabora, Ltd.
-+ *	Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-+ *
-+ * Copyright (C) 2016 Rockchip Electronics Co., Ltd.
-+ *	Alpha Lin <Alpha.Lin@rock-chips.com>
-+ */
-+
-+#include <media/v4l2-h264.h>
-+#include <media/v4l2-mem2mem.h>
-+#include <media/v4l2-vp9.h>
-+
-+#include "rkvdec.h"
-+
-+struct rkvdec_vp9_run {
-+	struct rkvdec_run base;
-+	const struct v4l2_ctrl_vp9_frame *decode_params;
-+};
-+
-+struct rkvdec_vp9_intra_mode_probs {
-+	u8 y_mode[105];
-+	u8 uv_mode[23];
-+};
-+
-+struct rkvdec_vp9_intra_only_frame_probs {
-+	u8 coef_intra[4][2][128];
-+	struct rkvdec_vp9_intra_mode_probs intra_mode[10];
-+};
-+
-+struct rkvdec_vp9_inter_frame_probs {
-+	u8 y_mode[4][9];
-+	u8 comp_mode[5];
-+	u8 comp_ref[5];
-+	u8 single_ref[5][2];
-+	u8 inter_mode[7][3];
-+	u8 interp_filter[4][2];
-+	u8 padding0[11];
-+	u8 coef[2][4][2][128];
-+	u8 uv_mode_0_2[3][9];
-+	u8 padding1[5];
-+	u8 uv_mode_3_5[3][9];
-+	u8 padding2[5];
-+	u8 uv_mode_6_8[3][9];
-+	u8 padding3[5];
-+	u8 uv_mode_9[9];
-+	u8 padding4[7];
-+	u8 padding5[16];
-+	struct {
-+		u8 joint[3];
-+		u8 sign[2];
-+		u8 classes[2][10];
-+		u8 class0_bit[2];
-+		u8 bits[2][10];
-+		u8 class0_fr[2][2][3];
-+		u8 fr[2][3];
-+		u8 class0_hp[2];
-+		u8 hp[2];
-+		u8 padding6[3];
-+	} mv;
-+};
-+
-+struct rkvdec_vp9_probs {
-+	u8 partition[16][3];
-+	u8 pred[3];
-+	u8 tree[7];
-+	u8 skip[3];
-+	u8 tx32[2][3];
-+	u8 tx16[2][2];
-+	u8 tx8[2][1];
-+	u8 is_inter[4];
-+	/* 128 bit alignment */
-+	u8 padding0[3];
-+	union {
-+		struct rkvdec_vp9_inter_frame_probs inter;
-+		struct rkvdec_vp9_intra_only_frame_probs intra_only;
-+	};
-+	/* 128 bit alignment */
-+	u8 padding1[8];
-+};
-+
-+void write_coeff_plane(const u8 coef[6][6][3], u8 *coeff_plane);
-+
-+struct rkvdec_decoded_buffer *
-+get_ref_buf_vp9(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *dst, u64 timestamp);
-+
-+void update_dec_buf_info(struct rkvdec_decoded_buffer *buf,
-+			 const struct v4l2_ctrl_vp9_frame *dec_params);
-diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c
-index 111111111111..222222222222 100644
---- a/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c
-+++ b/drivers/media/platform/rockchip/rkvdec/rkvdec-vp9.c
-@@ -23,71 +23,12 @@
- 
- #include "rkvdec.h"
- #include "rkvdec-regs.h"
-+#include "rkvdec-vp9-common.h"
- 
- #define RKVDEC_VP9_PROBE_SIZE		4864
- #define RKVDEC_VP9_COUNT_SIZE		13232
- #define RKVDEC_VP9_MAX_SEGMAP_SIZE	73728
- 
--struct rkvdec_vp9_intra_mode_probs {
--	u8 y_mode[105];
--	u8 uv_mode[23];
--};
--
--struct rkvdec_vp9_intra_only_frame_probs {
--	u8 coef_intra[4][2][128];
--	struct rkvdec_vp9_intra_mode_probs intra_mode[10];
--};
--
--struct rkvdec_vp9_inter_frame_probs {
--	u8 y_mode[4][9];
--	u8 comp_mode[5];
--	u8 comp_ref[5];
--	u8 single_ref[5][2];
--	u8 inter_mode[7][3];
--	u8 interp_filter[4][2];
--	u8 padding0[11];
--	u8 coef[2][4][2][128];
--	u8 uv_mode_0_2[3][9];
--	u8 padding1[5];
--	u8 uv_mode_3_5[3][9];
--	u8 padding2[5];
--	u8 uv_mode_6_8[3][9];
--	u8 padding3[5];
--	u8 uv_mode_9[9];
--	u8 padding4[7];
--	u8 padding5[16];
--	struct {
--		u8 joint[3];
--		u8 sign[2];
--		u8 classes[2][10];
--		u8 class0_bit[2];
--		u8 bits[2][10];
--		u8 class0_fr[2][2][3];
--		u8 fr[2][3];
--		u8 class0_hp[2];
--		u8 hp[2];
--	} mv;
--};
--
--struct rkvdec_vp9_probs {
--	u8 partition[16][3];
--	u8 pred[3];
--	u8 tree[7];
--	u8 skip[3];
--	u8 tx32[2][3];
--	u8 tx16[2][2];
--	u8 tx8[2][1];
--	u8 is_inter[4];
--	/* 128 bit alignment */
--	u8 padding0[3];
--	union {
--		struct rkvdec_vp9_inter_frame_probs inter;
--		struct rkvdec_vp9_intra_only_frame_probs intra_only;
--	};
--	/* 128 bit alignment */
--	u8 padding1[11];
--};
--
- /* Data structure describing auxiliary buffer format. */
- struct rkvdec_vp9_priv_tbl {
- 	struct rkvdec_vp9_probs probs;
-@@ -136,11 +77,6 @@ struct rkvdec_vp9_intra_frame_symbol_counts {
- 	struct rkvdec_vp9_refs_counts ref_cnt[2][4][2][6][6];
- };
- 
--struct rkvdec_vp9_run {
--	struct rkvdec_run base;
--	const struct v4l2_ctrl_vp9_frame *decode_params;
--};
--
- struct rkvdec_vp9_frame_info {
- 	u32 valid : 1;
- 	u32 segmapid : 1;
-@@ -166,27 +102,6 @@ struct rkvdec_vp9_ctx {
- 	struct rkvdec_regs regs;
- };
- 
--static void write_coeff_plane(const u8 coef[6][6][3], u8 *coeff_plane)
--{
--	unsigned int idx = 0, byte_count = 0;
--	int k, m, n;
--	u8 p;
--
--	for (k = 0; k < 6; k++) {
--		for (m = 0; m < 6; m++) {
--			for (n = 0; n < 3; n++) {
--				p = coef[k][m][n];
--				coeff_plane[idx++] = p;
--				byte_count++;
--				if (byte_count == 27) {
--					idx += 5;
--					byte_count = 0;
--				}
--			}
--		}
--	}
--}
--
- static void init_intra_only_probs(struct rkvdec_ctx *ctx,
- 				  const struct rkvdec_vp9_run *run)
- {
-@@ -348,24 +263,6 @@ static void init_probs(struct rkvdec_ctx *ctx,
- 		init_inter_probs(ctx, run);
- }
- 
--static struct rkvdec_decoded_buffer *
--get_ref_buf_vp9(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *dst, u64 timestamp)
--{
--	struct v4l2_m2m_ctx *m2m_ctx = ctx->fh.m2m_ctx;
--	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
--	struct vb2_buffer *buf;
--
--	/*
--	 * If a ref is unused or invalid, address of current destination
--	 * buffer is returned.
--	 */
--	buf = vb2_find_buffer(cap_q, timestamp);
--	if (!buf)
--		buf = &dst->vb2_buf;
--
--	return vb2_to_rkvdec_decoded_buf(buf);
--}
--
- static dma_addr_t get_mv_base_addr(struct rkvdec_decoded_buffer *buf)
- {
- 	unsigned int aligned_pitch, aligned_height, yuv_len;
-@@ -446,14 +343,6 @@ static void config_seg_registers(struct rkvdec_ctx *ctx, unsigned int segid)
- 		(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE);
- }
- 
--static void update_dec_buf_info(struct rkvdec_decoded_buffer *buf,
--				const struct v4l2_ctrl_vp9_frame *dec_params)
--{
--	buf->vp9.width = dec_params->frame_width_minus_1 + 1;
--	buf->vp9.height = dec_params->frame_height_minus_1 + 1;
--	buf->vp9.bit_depth = dec_params->bit_depth;
--}
--
- static void update_ctx_cur_info(struct rkvdec_vp9_ctx *vp9_ctx,
- 				struct rkvdec_decoded_buffer *buf,
- 				const struct v4l2_ctrl_vp9_frame *dec_params)
--- 
-Armbian
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Venkata Atchuta Bheemeswara Sarma Darbha <vdarbha0473@gmail.com>
 Date: Sun, 26 Jul 2026 15:25:36 -0500
-Subject: media: rkvdec: Add VP9 support for VDPU381 variant
+Subject: [PATCH] media: rkvdec: Add VP9 support for VDPU381 variant
 
 Add support for VP9 decoding on VDPU381 used with RK3588. VDPU381
 supports VP9 Profile 0 and Profile 2 up to 7680x4320@30fps.
@@ -420,19 +11,26 @@ Signed-off-by: Igor Paunovic <royalnet026@gmail.com>
 Co-developed-by: Francesco Saverio Pavone <pavone.lawyer@gmail.com>
 Signed-off-by: Francesco Saverio Pavone <pavone.lawyer@gmail.com>
 Signed-off-by: Venkata Atchuta Bheemeswara Sarma Darbha <vdarbha0473@gmail.com>
-Tested-by: Igor Paunovic royalnet026@gmail.com
-Link: https://patch.msgid.link/20260726-b4-add-rkvdec2-vp9-vdpu381-v1-3-180fb2d1f10c@gmail.com
-Signed-off-by: Ricardo Pardini <ricardo@pardini.net>
 ---
- drivers/media/platform/rockchip/rkvdec/Makefile              |    1 +
- drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-regs.h |  234 ++
- drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-vp9.c  | 1067 ++++++++++
- drivers/media/platform/rockchip/rkvdec/rkvdec.c              |   61 +
- drivers/media/platform/rockchip/rkvdec/rkvdec.h              |    1 +
+Venkata Atchuta Bheemeswara Sarma Darbha's "media: rkvdec: Add VP9 support
+for VDPU381 variant" v1, patch 3/4, posted 2026-07-26, under review on
+linux-media as of 2026-08-30:
+https://lore.kernel.org/linux-media/20260726-b4-add-rkvdec2-vp9-vdpu381-v1-3-180fb2d1f10c@gmail.com/
+
+Regenerated against this series' base, v7.2.2 plus 030-075; the change is
+identical to the posting. Patch 4/4 of that posting is not taken -- see 076,
+which makes the same change for a reason the posting did not have.
+
+ .../media/platform/rockchip/rkvdec/Makefile   |    1 +
+ .../rockchip/rkvdec/rkvdec-vdpu381-regs.h     |  234 ++++
+ .../rockchip/rkvdec/rkvdec-vdpu381-vp9.c      | 1067 +++++++++++++++++
+ .../media/platform/rockchip/rkvdec/rkvdec.c   |   61 +
+ .../media/platform/rockchip/rkvdec/rkvdec.h   |    1 +
  5 files changed, 1364 insertions(+)
+ create mode 100644 drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-vp9.c
 
 diff --git a/drivers/media/platform/rockchip/rkvdec/Makefile b/drivers/media/platform/rockchip/rkvdec/Makefile
-index 111111111111..222222222222 100644
+index 2bbd67b2d..5eae59e87 100644
 --- a/drivers/media/platform/rockchip/rkvdec/Makefile
 +++ b/drivers/media/platform/rockchip/rkvdec/Makefile
 @@ -10,6 +10,7 @@ rockchip-vdec-y += \
@@ -444,7 +42,7 @@ index 111111111111..222222222222 100644
  		   rkvdec-vdpu383-hevc.o \
  		   rkvdec-vp9-common.o \
 diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-regs.h b/drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-regs.h
-index 111111111111..222222222222 100644
+index 6da36031d..7b92ac386 100644
 --- a/drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-regs.h
 +++ b/drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-regs.h
 @@ -4,6 +4,8 @@
@@ -709,7 +307,7 @@ index 111111111111..222222222222 100644
  #endif /* __RKVDEC_REGS_H__ */
 diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-vp9.c b/drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-vp9.c
 new file mode 100644
-index 000000000000..111111111111
+index 000000000..9aa75a522
 --- /dev/null
 +++ b/drivers/media/platform/rockchip/rkvdec/rkvdec-vdpu381-vp9.c
 @@ -0,0 +1,1067 @@
@@ -1781,10 +1379,10 @@ index 000000000000..111111111111
 +	.get_image_fmt = rkvdec_vp9_get_image_fmt,
 +};
 diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec.c b/drivers/media/platform/rockchip/rkvdec/rkvdec.c
-index 111111111111..222222222222 100644
+index 00c5ae308..d540c470b 100644
 --- a/drivers/media/platform/rockchip/rkvdec/rkvdec.c
 +++ b/drivers/media/platform/rockchip/rkvdec/rkvdec.c
-@@ -437,6 +437,45 @@ static const struct rkvdec_decoded_fmt_desc rkvdec_vp9_decoded_fmts[] = {
+@@ -464,6 +464,45 @@ static const struct rkvdec_decoded_fmt_desc rkvdec_vp9_decoded_fmts[] = {
  	},
  };
  
@@ -1830,7 +1428,7 @@ index 111111111111..222222222222 100644
  static const struct rkvdec_coded_fmt_desc rkvdec_coded_fmts[] = {
  	{
  		.fourcc = V4L2_PIX_FMT_HEVC_SLICE,
-@@ -537,6 +576,21 @@ static const struct rkvdec_coded_fmt_desc vdpu381_coded_fmts[] = {
+@@ -564,6 +603,21 @@ static const struct rkvdec_coded_fmt_desc vdpu381_coded_fmts[] = {
  		.decoded_fmts = rkvdec_h264_decoded_fmts,
  		.subsystem_flags = VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF,
  	},
@@ -1852,7 +1450,7 @@ index 111111111111..222222222222 100644
  };
  
  static const struct rkvdec_coded_fmt_desc vdpu383_coded_fmts[] = {
-@@ -793,6 +847,13 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
+@@ -817,6 +871,13 @@ static int rkvdec_s_output_fmt(struct file *file, void *priv,
  	 * Note that this will propagates any size changes to the decoded format.
  	 */
  	ctx->image_fmt = RKVDEC_IMG_FMT_ANY;
@@ -1867,10 +1465,10 @@ index 111111111111..222222222222 100644
  
  	/* Propagate colorspace information to capture. */
 diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec.h b/drivers/media/platform/rockchip/rkvdec/rkvdec.h
-index 111111111111..222222222222 100644
+index d5977cef6..338ce1efb 100644
 --- a/drivers/media/platform/rockchip/rkvdec/rkvdec.h
 +++ b/drivers/media/platform/rockchip/rkvdec/rkvdec.h
-@@ -191,6 +191,7 @@ extern const struct rkvdec_coded_fmt_ops rkvdec_vp9_fmt_ops;
+@@ -204,6 +204,7 @@ extern const struct rkvdec_coded_fmt_ops rkvdec_vp9_fmt_ops;
  /* VDPU381 ops */
  extern const struct rkvdec_coded_fmt_ops rkvdec_vdpu381_h264_fmt_ops;
  extern const struct rkvdec_coded_fmt_ops rkvdec_vdpu381_hevc_fmt_ops;
@@ -1879,53 +1477,4 @@ index 111111111111..222222222222 100644
  /* VDPU383 ops */
  extern const struct rkvdec_coded_fmt_ops rkvdec_vdpu383_h264_fmt_ops;
 -- 
-Armbian
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Igor Paunovic <royalnet026@gmail.com>
-Date: Sun, 26 Jul 2026 15:25:37 -0500
-Subject: media: rkvdec: align bytesperline to 64 bytes in
- rkvdec_fill_decoded_pixfmt()
-
-Ensure bytesperline is 64-byte aligned and scale sizeimage accordingly.
-
-Signed-off-by: Igor Paunovic <royalnet026@gmail.com>
-Signed-off-by: Francesco Saverio Pavone <pavone.lawyer@gmail.com>
-Signed-off-by: Venkata Atchuta Bheemeswara Sarma Darbha <vdarbha0473@gmail.com>
-Tested-by: Igor Paunovic royalnet026@gmail.com
-Link: https://patch.msgid.link/20260726-b4-add-rkvdec2-vp9-vdpu381-v1-4-180fb2d1f10c@gmail.com
-Signed-off-by: Ricardo Pardini <ricardo@pardini.net>
----
- drivers/media/platform/rockchip/rkvdec/rkvdec.c | 12 ++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec.c b/drivers/media/platform/rockchip/rkvdec/rkvdec.c
-index 111111111111..222222222222 100644
---- a/drivers/media/platform/rockchip/rkvdec/rkvdec.c
-+++ b/drivers/media/platform/rockchip/rkvdec/rkvdec.c
-@@ -102,12 +102,20 @@ static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
- 				       struct v4l2_pix_format_mplane *pix_mp)
- {
- 	const struct rkvdec_variant *variant = ctx->dev->variant;
-+	struct v4l2_plane_pix_format *plane = &pix_mp->plane_fmt[0];
-+	u32 aligned_bpl;
- 
- 	v4l2_fill_pixfmt_mp(pix_mp, pix_mp->pixelformat, pix_mp->width, pix_mp->height);
- 
--	ctx->colmv_offset = pix_mp->plane_fmt[0].sizeimage;
-+	/* ensure bpl is 64 byte aligned and scale sizeimage accordingly. */
-+	aligned_bpl = ALIGN(plane->bytesperline, 64);
-+	if (aligned_bpl != plane->bytesperline) {
-+		plane->sizeimage = plane->sizeimage / plane->bytesperline * aligned_bpl;
-+		plane->bytesperline = aligned_bpl;
-+	}
- 
--	pix_mp->plane_fmt[0].sizeimage += variant->ops->colmv_size(pix_mp->width, pix_mp->height);
-+	ctx->colmv_offset = plane->sizeimage;
-+	plane->sizeimage += variant->ops->colmv_size(pix_mp->width, pix_mp->height);
- }
- 
- static void rkvdec_reset_fmt(struct rkvdec_ctx *ctx, struct v4l2_format *f,
--- 
-Armbian
-
+2.43.0

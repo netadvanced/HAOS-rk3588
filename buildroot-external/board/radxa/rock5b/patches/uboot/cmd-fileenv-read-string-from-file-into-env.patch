@@ -18,7 +18,7 @@ diff --git a/cmd/Kconfig b/cmd/Kconfig
 index 111111111111..222222222222 100644
 --- a/cmd/Kconfig
 +++ b/cmd/Kconfig
-@@ -1952,6 +1952,11 @@ config CMD_XXD
+@@ -1960,6 +1960,11 @@ config CMD_XXD
  	help
  	  Print file as hexdump to standard output
  
