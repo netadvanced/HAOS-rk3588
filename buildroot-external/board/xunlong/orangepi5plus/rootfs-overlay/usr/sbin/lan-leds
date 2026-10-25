@@ -1,0 +1,30 @@
+#!/bin/sh
+# ==============================================================================
+# Run LAN LEDS on both RTL8125B ports (enP3p49s0, enP4p65s0)
+# Left is Link (green)
+# Right is Tx/Rx Activity (amber)
+# r8169 names its LEDs <ifname>-<index>::lan, the device link gives the netdev
+# ==============================================================================
+modprobe ledtrig-netdev
+
+for L in /sys/class/leds/*-1::lan; do
+    [ -e "$L" ] || continue
+    IF=$(basename "$(readlink -f "$L/device")")
+    R=${L%-1::lan}-2::lan
+
+    echo netdev > $L/trigger
+    echo $IF > $L/device_name
+    echo 1 > $L/rx
+    echo 1 > $L/tx
+    echo 0 > $L/link_100
+    echo 0 > $L/link_1000
+    echo 0 > $L/link_2500
+
+    echo netdev > $R/trigger
+    echo $IF > $R/device_name
+    echo 1 > $R/link_100
+    echo 1 > $R/link_1000
+    echo 1 > $R/link_2500
+    echo 0 > $R/rx
+    echo 0 > $R/tx
+done
