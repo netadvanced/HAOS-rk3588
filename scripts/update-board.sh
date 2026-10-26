@@ -188,9 +188,12 @@ log "Build finished in $(( ($(date +%s) - start) / 60 )) min"
 version="$(docker run --rm -v "$SRC_VOL":/build alpine sh -c \
     '. /build/buildroot-external/meta; echo "$VERSION_MAJOR.$VERSION_MINOR${VERSION_SUFFIX:+.$VERSION_SUFFIX}"')"
 docker run --rm -v "$SRC_VOL":/build -v "$OUT_DIR":/out alpine sh -c \
-    "cp /build/output/images/haos_$BOARD-$version.img.xz /build/output/images/haos_$BOARD-$version.raucb /out/"
+    "cp /build/output/images/haos_$BOARD-$version.img.xz /build/output/images/haos_$BOARD-$version.raucb /out/
+     # SPI NOR bootloader, needed to boot from NVMe
+     spi=\$(ls /build/output/build/uboot-*/u-boot-rockchip-spi.bin 2>/dev/null | tail -1)
+     [ -z \"\$spi\" ] || cp \"\$spi\" /out/u-boot-rockchip-spi-$BOARD.bin"
 log "Artifacts in $OUT_DIR"
-(cd "$OUT_DIR" && shasum -a 256 "haos_$BOARD-$version".*)
+(cd "$OUT_DIR" && shasum -a 256 "haos_$BOARD-$version".* u-boot-rockchip-spi-"$BOARD".bin 2>/dev/null)
 
 if [ "$PUSH" = 1 ]; then
     log "Pushing $BOARD to origin"
