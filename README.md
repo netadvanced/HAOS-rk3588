@@ -1,37 +1,78 @@
-# Home Assistant Operating System
+# Home Assistant Operating System for Rock5b
 
-Home Assistant Operating System (formerly HassOS) is a Linux based operating system optimized to host [Home Assistant](https://www.home-assistant.io) and its [Apps](https://www.home-assistant.io/apps/).
-
-Home Assistant Operating System uses Docker as its container engine. By default it deploys the Home Assistant Supervisor as a container. Home Assistant Supervisor in turn uses the Docker container engine to control Home Assistant Core and Apps in separate containers. Home Assistant Operating System is **not** based on a regular Linux distribution like Ubuntu. It is built using [Buildroot](https://buildroot.org/) and it is optimized to run Home Assistant. It targets single board compute (SBC) devices like the Raspberry Pi or ODROID but also supports x86-64 systems with UEFI.
+This is an unofficial fork of the awesome [Home Assistant Operating System](https://github.com/home-assistant/operating-system) which adds support for the Rock5b board.
 
 [![Home Assistant - A project from the Open Home Foundation](https://www.openhomefoundation.org/badges/home-assistant.png)](https://www.openhomefoundation.org/)
 
-## Features
-
-- Lightweight and memory-efficient
-- Minimized I/O
-- Over The Air (OTA) updates
-- Offline updates
-- Modular using Docker container engine
-
-## Supported hardware
-
-The list of supported hardware is defined by [ADR-0015](https://github.com/home-assistant/architecture/blob/master/adr/0015-home-assistant-os.md).
-Every new hardware addition must meet at least requirements defined in [ADR-0017](https://github.com/home-assistant/architecture/blob/master/adr/0017-hardware-screening-os.md) and pass through an architecture design proposal.
-
-For documentation explaining details of the individual supported boards, see [Board support](https://developers.home-assistant.io/docs/operating-system/boards/overview) section of the Home Assistant Developer Docs.
-
 ## Getting Started
 
-If you just want to use Home Assistant the official [getting started guide](https://www.home-assistant.io/getting-started/) and [installation instructions](https://www.home-assistant.io/hassio/installation/) take you through how to download Home Assistant Operating System and get it running on your machine.
+Download the latest version from the [Releases](https://github.com/nyok92/rock5b/releases) page & flash it (with Balena, armbian imager or others) to your SD card, eMMc or NVMe SSD.
 
-If you're interested in finding out more about Home Assistant Operating System and how it works read on...
+## Boot from NMVe SSD
+
+Booting HAOS from an NVMe SSD has not yet been tested.
+Please see the [official Radxa site](https://wiki.radxa.com/Rock5/install/nvme) for which types of SSDs are supported.
+Since the Rock5b cannot boot natively from an SSD, you need a small bootloader either in eMMC or on an SD card or in SPI flash.
+It performs the initialization and then loads the boot configuration, boot script and kernel files from the boot partition of the SSD.
+
+u-boot-rockchip-spi.bin is provided for that purpose on the Release page.
+It only contains the U-Boot bootloader (TPL, SPL and main).
+
+For documentation explaining details of the individual supported boards, see [Board support](https://contributors.home-assistant.io/os/operating-system/boards/) section of the Home Assistant contributor docs.
+
+## Upgrading
+
+Since this is an unofficial fork of Homeassistant OS, the OS image cannot be updated from the UI (supervisor, core and all other components can be updated just fine). Instead, the update process is triggered via SSH from the command line.
+
+**Always create a full backup before upgrading to avoid data loss.**
+
+Use the [hass os enable ssh app fork](https://github.com/nyok92/hassio-addons) to enable ssh root access on port 22222 (the "Terminal & SSH" Add-on will not work as it only exposes a limited shell in a container).
+
+Connect to the device and run the following command. Replace the URL with the appropriate link from the Releases page for your device. Make sure to copy the `.raucb` URL, not the `.img.xz`.
+
+```
+rauc install https://github.com/nyok92/rock5b/releases/download/<release>/haos_<device>-<release>.raucb
+```
+
+The file will be downloaded to a temporary location in `/mnt/data/tmp/` so make sure that there is enough space on the data partition left.
+
+```
+# rauc install https://github.com/nyok92/rock5b/releases/download/ota-test/haos_rock5b-18.4.dev20240502.raucb
+installing
+  0% Installing
+  0% Determining slot states
+ 10% Determining slot states done.
+ 10% Checking bundle
+ 10% Verifying signature
+ 20% Verifying signature done.
+ 20% Checking bundle done.
+ 20% Checking manifest contents
+ 30% Checking manifest contents done.
+ 30% Determining target install group
+ 40% Determining target install group done.
+ 40% Updating slots
+ 40% Checking slot boot.0
+ 41% Checking slot boot.0 done.
+ 41% Copying image to boot.0
+ ...
+ 99% Copying image to spl.0 done.
+ 99% Updating slots done.
+100% Installing done.
+Installing `https://github.com/nyok92/rock5b/releases/download/ota-test/haos_rock5b-18.4.dev20240502.raucb` succeeded
+```
+
+Now reboot the device to switch to the new OS version.
+
+This process won't update the SPI bootloader.
+You will need to fulfill the previous SPI install procedure with the new updated SPI file available in github releases.
+
+If there is an error during installation, run `journalctl -u rauc.service` to get an extended output log.
 
 ## Development
 
 If you don't have experience with embedded systems, Buildroot or the build process for Linux distributions it is recommended to read up on these topics first (e.g. [Bootlin](https://bootlin.com/docs/) has excellent resources).
 
-The Home Assistant Operating System documentation can be found on the [Home Assistant Developer Docs website](https://developers.home-assistant.io/docs/operating-system).
+The Home Assistant Operating System documentation can be found on the [Home Assistant contributors website](https://contributors.home-assistant.io/os/operating-system/).
 
 ### Components
 

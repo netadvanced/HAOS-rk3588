@@ -12,7 +12,7 @@ diff --git a/boot/fdt_support.c b/boot/fdt_support.c
 index 111111111111..222222222222 100644
 --- a/boot/fdt_support.c
 +++ b/boot/fdt_support.c
-@@ -632,27 +632,31 @@ int fdt_fixup_memory(void *blob, u64 start, u64 size)
+@@ -638,27 +638,31 @@ int fdt_fixup_memory(void *blob, u64 start, u64 size)
  
  void fdt_fixup_ethernet(void *fdt)
  {
@@ -47,7 +47,7 @@ index 111111111111..222222222222 100644
  		/* Select property number 'prop' */
  		for (j = 0; j < prop; j++)
  			offset = fdt_next_property_offset(fdt, offset);
-@@ -660,7 +664,10 @@ void fdt_fixup_ethernet(void *fdt)
+@@ -666,7 +670,10 @@ void fdt_fixup_ethernet(void *fdt)
  		if (offset < 0)
  			break;
  
@@ -58,7 +58,7 @@ index 111111111111..222222222222 100644
  		if (!strncmp(name, "ethernet", 8)) {
  			/* Treat plain "ethernet" same as "ethernet0". */
  			if (!strcmp(name, "ethernet")
-@@ -679,33 +686,52 @@ void fdt_fixup_ethernet(void *fdt)
+@@ -685,33 +692,52 @@ void fdt_fixup_ethernet(void *fdt)
  				else
  					sprintf(mac, "eth%daddr", i);
  			} else {
@@ -132,7 +132,7 @@ index 111111111111..222222222222 100644
  // SPDX-License-Identifier: GPL-2.0+
  /*
   * Copyright (c) 2013, Google Inc.
-@@ -586,11 +587,25 @@ __weak int ft_verify_fdt(void *fdt)
+@@ -623,11 +624,25 @@ __weak int ft_verify_fdt(void *fdt)
  
  __weak int arch_fixup_fdt(void *blob)
  {
@@ -158,7 +158,7 @@ index 111111111111..222222222222 100644
  	ulong *initrd_start = &images->initrd_start;
  	ulong *initrd_end = &images->initrd_end;
  	bool skip_board_fixup = false;
-@@ -638,6 +653,7 @@ int image_setup_libfdt(struct bootm_headers *images, void *blob, bool lmb)
+@@ -675,6 +690,7 @@ int image_setup_libfdt(struct bootm_headers *images, void *blob, bool lmb)
  					strlen(images->fit_uname_cfg) + 1, 1);
  
  	/* Update ethernet nodes */
@@ -166,7 +166,7 @@ index 111111111111..222222222222 100644
  	fdt_fixup_ethernet(blob);
  #if IS_ENABLED(CONFIG_CMD_PSTORE)
  	/* Append PStore configuration */
-@@ -651,6 +667,7 @@ int image_setup_libfdt(struct bootm_headers *images, void *blob, bool lmb)
+@@ -688,6 +704,7 @@ int image_setup_libfdt(struct bootm_headers *images, void *blob, bool lmb)
  	}
  
  	if (IS_ENABLED(CONFIG_OF_BOARD_SETUP) && !skip_board_fixup) {
@@ -174,7 +174,7 @@ index 111111111111..222222222222 100644
  		fdt_ret = ft_board_setup(blob, gd->bd);
  		if (fdt_ret) {
  			printf("ERROR: board-specific fdt fixup failed: %s\n",
-@@ -659,6 +676,7 @@ int image_setup_libfdt(struct bootm_headers *images, void *blob, bool lmb)
+@@ -696,6 +713,7 @@ int image_setup_libfdt(struct bootm_headers *images, void *blob, bool lmb)
  		}
  	}
  	if (IS_ENABLED(CONFIG_OF_SYSTEM_SETUP)) {

@@ -36,7 +36,7 @@ diff --git a/drivers/clk/rockchip/clk_rk3588.c b/drivers/clk/rockchip/clk_rk3588
 index 111111111111..222222222222 100644
 --- a/drivers/clk/rockchip/clk_rk3588.c
 +++ b/drivers/clk/rockchip/clk_rk3588.c
-@@ -1958,6 +1958,37 @@ static void rk3588_clk_init(struct rk3588_clk_priv *priv)
+@@ -1956,6 +1956,37 @@ static void rk3588_clk_init(struct rk3588_clk_priv *priv)
  		     (ACLK_TOP_S200_SEL_200M << ACLK_TOP_S200_SEL_SHIFT));
  }
  
@@ -74,7 +74,7 @@ index 111111111111..222222222222 100644
  static int rk3588_clk_probe(struct udevice *dev)
  {
  	struct rk3588_clk_priv *priv = dev_get_priv(dev);
-@@ -1986,6 +2017,10 @@ static int rk3588_clk_probe(struct udevice *dev)
+@@ -1984,6 +2015,10 @@ static int rk3588_clk_probe(struct udevice *dev)
  
  	rk3588_clk_init(priv);
  
@@ -87,3 +87,4 @@ index 111111111111..222222222222 100644
  	if (ret)
 -- 
 Armbian
+
