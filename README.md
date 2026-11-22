@@ -4,6 +4,13 @@ This is an unofficial fork of the awesome [Home Assistant Operating System](http
 
 [![Home Assistant - A project from the Open Home Foundation](https://www.openhomefoundation.org/badges/home-assistant.png)](https://www.openhomefoundation.org/)
 
+## Supported boards
+
+| Board | SoC | Defconfig | Documentation |
+|---|---|---|---|
+| Radxa ROCK 5B | RK3588 | `rock5b` | this README |
+| Orange Pi 5 Plus | RK3588 | `orangepi5plus` | [Documentation/boards/xunlong/orangepi5plus.md](Documentation/boards/xunlong/orangepi5plus.md) |
+
 ## Getting Started
 
 Download the latest version from the [Releases](https://github.com/nyok92/rock5b/releases) page & flash it (with Balena, armbian imager or others) to your SD card, eMMc or NVMe SSD.
