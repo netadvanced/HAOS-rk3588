@@ -20,10 +20,8 @@ while the decoder is in use, as before that commit.
 Fixes: 6a846f7d72c7 ("media: rkvdec: Enable all clocks without naming them")
 Signed-off-by: Igor Velkov <iav@iav.lv>
 ---
-Rebased onto 044-rkvdec-split-core-and-master.patch: the clocks are now
-fetched in rkvdec_core_probe() into core->clocks, and the
-rkvdec_disable_multicore() call that preceded them is gone. Same one-line
-change.
+Rebased on top of the core/master split (044): the call now lives in
+rkvdec_core_probe() and fills core->clocks. Otherwise unchanged.
 
  drivers/media/platform/rockchip/rkvdec/rkvdec.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -32,7 +30,7 @@ diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec.c b/drivers/media/pla
 index 111111111111..222222222222 100644
 --- a/drivers/media/platform/rockchip/rkvdec/rkvdec.c
 +++ b/drivers/media/platform/rockchip/rkvdec/rkvdec.c
-@@ -1765,7 +1765,7 @@ static int rkvdec_core_probe(struct platform_device *pdev)
+@@ -1765,7 +1765,7 @@
  	core->dev = &pdev->dev;
  	INIT_DELAYED_WORK(&core->watchdog_work, rkvdec_watchdog_func);
  
