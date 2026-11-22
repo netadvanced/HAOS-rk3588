@@ -1,0 +1,27 @@
+From: HAOS rk3588 <noreply@localhost>
+Subject: [PATCH] rockchip: add Orange Pi 5B u-boot dtsi
+
+The upstream rk3588s-orangepi-5b.dts has no U-Boot specific dtsi, so it
+would fall back to rk3588-u-boot.dtsi (RK3588, not RK3588S). Add one that
+uses rk3588s-u-boot.dtsi (SPL boot order: same-as-spl, SD, eMMC) and sets
+the eMMC speed modes U-Boot supports, like the Orange Pi 5 Plus.
+
+---
+ arch/arm/dts/rk3588s-orangepi-5b-u-boot.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 arch/arm/dts/rk3588s-orangepi-5b-u-boot.dtsi
+
+diff --git a/arch/arm/dts/rk3588s-orangepi-5b-u-boot.dtsi b/arch/arm/dts/rk3588s-orangepi-5b-u-boot.dtsi
+new file mode 100644
+--- /dev/null
++++ b/arch/arm/dts/rk3588s-orangepi-5b-u-boot.dtsi
+@@ -0,0 +1,9 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++#include "rk3588s-u-boot.dtsi"
++
++&sdhci {
++	bootph-pre-ram;
++	cap-mmc-highspeed;
++	mmc-hs200-1_8v;
++};
