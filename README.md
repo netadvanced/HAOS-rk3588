@@ -10,6 +10,7 @@ This is an unofficial fork of the awesome [Home Assistant Operating System](http
 |---|---|---|---|
 | Radxa ROCK 5B | RK3588 | `rock5b` | this README |
 | Orange Pi 5 Plus | RK3588 | `orangepi5plus` | [Documentation/boards/xunlong/orangepi5plus.md](Documentation/boards/xunlong/orangepi5plus.md) |
+| Orange Pi 5B | RK3588S | `orangepi5b` | [Documentation/boards/xunlong/orangepi5b.md](Documentation/boards/xunlong/orangepi5b.md) |
 
 ## Getting Started
 
