@@ -47,7 +47,11 @@ case "$BOARD" in
     *) PREFIX="${PREFIX:-haos-$BOARD}" ;;
 esac
 SRC_VOL="$PREFIX-src"
-CACHE_VOL="$PREFIX-cache"
+# The RK3588 boards share one download + ccache volume (same toolchain and paths)
+case "$BOARD" in
+    orangepi5plus|orangepi5b) CACHE_VOL="${CACHE_VOL:-haos-opi5plus-cache}" ;;
+    *) CACHE_VOL="${CACHE_VOL:-$PREFIX-cache}" ;;
+esac
 CONTAINER="$PREFIX-build"
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"

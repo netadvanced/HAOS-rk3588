@@ -10,5 +10,11 @@
     "defconfig": "orangepi5plus",
     "architecture": "aarch64",
     "label": "board/xunlong/orangepi5plus"
+  },
+  {
+    "id": "orangepi5b",
+    "defconfig": "orangepi5b",
+    "architecture": "aarch64",
+    "label": "board/xunlong/orangepi5b"
   }
 ]
