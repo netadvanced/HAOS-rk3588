@@ -46,7 +46,7 @@ function prune_unused_firmware() {
     # Remove firmware which the kernel drivers never load. The per-driver logic
     # depends on how each driver requests its firmware and has been verified
     # for the kernel versions below only.
-    local validated_kernels=("6.18")
+    local validated_kernels=("6.18" "7.3")
     local kernel_dirs kernel declared_firmware
 
     kernel_dirs=("${TARGET_DIR}"/usr/lib/modules/*/)
