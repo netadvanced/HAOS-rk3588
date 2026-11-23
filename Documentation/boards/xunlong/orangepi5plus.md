@@ -14,7 +14,7 @@ Unofficial Home Assistant OS port, maintained on the `orangepi5plus` branch of
 | Linux | 7.3.3 (pinned), DTS `rockchip/rk3588-orangepi-5-plus` |
 | Kernel config | `armbian-kernel.config` (7.3) + HAOS fragments + board `kernel.config` |
 | Kernel patches | `patches/linux` (121 patches, the rock5b set that last built on 7.3.y) |
-| U-Boot patches | `patches/uboot` -> symlink to the shared `radxa/rock5b/patches/uboot` |
+| U-Boot patches | `patches/uboot` (10 patches, pinned copy of the rock5b set as of Nov 2026) |
 
 ## Hardware status
 
@@ -56,7 +56,7 @@ and ccache volume `haos-opi5plus-cache`; artifacts go to `~/Projects/HAOS-images
 
 ## Differences from the Rock 5B port
 
-- Own kernel patch set and Armbian config so the board stays on the 7.3 stable
+- Own kernel and U-Boot patch sets and Armbian config so the board stays on the 7.3 stable
   series while `rock5b-dev` tracks 7.4-rc. When syncing from nyok92, changes to
   `rock5b_defconfig`, `radxa/rock5b/kernel.config` and the rock5b overlay must be
   ported by hand (`update-board.sh --from-nyok92` stops and lists them).
