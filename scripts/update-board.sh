@@ -172,6 +172,9 @@ docker run --rm -v "$SRC_VOL":/build -v "$REPO":/src:ro --entrypoint sh "$BUILDE
 "
 
 # 5. Build ----------------------------------------------------------------------
+# Never build without the fork's RAUC signing key (restored from 1Password if the
+# volume has none): bundles signed with another key are rejected by the boards.
+"$REPO/scripts/ensure-signing-key.sh" "$SRC_VOL" || die "RAUC signing key check failed"
 log "Building $BOARD (logs: docker logs -f $CONTAINER)"
 mkdir -p "$OUT_DIR"
 build_log="$OUT_DIR/build-$BOARD.log"
@@ -187,6 +190,11 @@ log "Build finished in $(( ($(date +%s) - start) / 60 )) min"
 # 6. Copy artifacts -------------------------------------------------------------
 version="$(docker run --rm -v "$SRC_VOL":/build alpine sh -c \
     '. /build/buildroot-external/meta; echo "$VERSION_MAJOR.$VERSION_MINOR${VERSION_SUFFIX:+.$VERSION_SUFFIX}"')"
+# The bundle must verify against the fork's certificate, or boards will refuse it
+docker run --rm -v "$SRC_VOL":/build --entrypoint sh "$BUILDER_IMAGE" -c \
+    "/build/output/host/bin/rauc info --keyring /build/cert.pem /build/output/images/haos_$BOARD-$version.raucb >/dev/null" ||
+    die "haos_$BOARD-$version.raucb is not signed by the fork's RAUC key"
+log "Bundle signature verified against the fork's RAUC certificate"
 docker run --rm -v "$SRC_VOL":/build -v "$OUT_DIR":/out alpine sh -c \
     "cp /build/output/images/haos_$BOARD-$version.img.xz /build/output/images/haos_$BOARD-$version.raucb /out/
      # SPI NOR bootloader, needed to boot from NVMe
