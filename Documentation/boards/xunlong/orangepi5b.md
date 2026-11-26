@@ -31,11 +31,12 @@ RK3588S base and makes the SPL try the SD card first, then the eMMC.
 | Gigabit Ethernet (RTL8211F on gmac1) | works | 1 Gbps link, DHCP |
 | HDMI console, status LED | works | display and LED drivers load as modules once userspace starts, so the screen stays dark for the first ~20 s |
 | Mali G610 GPU, video decode/encode, NPU | drivers load | panthor, rkvdec, hantro, rkvenc, rocket probe fine; not exercised yet |
-| USB 3.0 port | works | |
-| USB 2.0 ports | **not working** | to investigate (port power or USB2 PHY) |
-| WiFi / Bluetooth (on-board module) | **not working** | the mainline 5B device tree does not describe the module; needs DT nodes + firmware |
+| USB 3.0 ports (blue) | works | |
+| USB 2.0 port (white) and USB-C | works | the white port is wired to the USB-C controller (`usb_host0_xhci`); the DT sets `role-switch-default-mode = "host"` so it is a host when nothing is plugged into USB-C |
+| WiFi (AP6275P / BCM43752, PCIe) | works | 2.4 + 5 GHz; DT patch adds it on `pcie2x1l2`, firmware `brcmfmac43752-pcie.*` from armbian/firmware in the board overlay |
+| Bluetooth (BCM4362A2, UART9) | works | controller up with `BCM4362A2.hcd`; check pairing in Home Assistant |
 | NVMe / M.2 | n/a | no M.2 slot on the 5B |
-| OTA from the Home Assistant UI | no | unofficial build, update with RAUC |
+| OTA from the Home Assistant UI | no | unofficial build, update with `rauc install` (tested: A→B update, 3 warm reboots OK) |
 
 Update this table as features are verified on hardware.
 
@@ -64,6 +65,12 @@ Installing to the eMMC:
   on first boot; haos-expand moves it, do not fix it by hand.
 
 ## Update
+
+RAUC 1.13 needs `patches/rauc/0002-dm-accept-extra-fields-in-the-dm-verity-status-line.patch`
+on Linux 7.x kernels, otherwise every install fails with
+"Unexpected dm-verity status 'V -'". Images built before that patch cannot
+install bundles themselves: run the fixed `rauc` binary from the new build once
+(systemd drop-in in `/run` pointing `rauc.service` at it), install, reboot.
 
 Same as the 5 Plus: `haos_orangepi5b-<version>.raucb` on a USB stick labelled
 `CONFIG`, or `rauc install` from the host shell, then reboot.
