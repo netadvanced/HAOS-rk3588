@@ -4,5 +4,11 @@
     "defconfig": "rock5b",
     "architecture": "aarch64",
     "label": "board/radxa/rock5b"
+  },
+  {
+    "id": "orangepi5plus",
+    "defconfig": "orangepi5plus",
+    "architecture": "aarch64",
+    "label": "board/xunlong/orangepi5plus"
   }
 ]

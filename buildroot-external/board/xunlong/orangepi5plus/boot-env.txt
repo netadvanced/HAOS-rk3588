@@ -1,0 +1,8 @@
+# Boot environment template for orangepi5plus (copied to haos-config.txt on the boot partition)
+
+# Modify this to enable dt overlays
+# Multiple overlays must be separated by a space.
+# overlays=
+
+# Select device tree (DO NOT MODIFY)
+fdtfile=rk3588-orangepi-5-plus.dtb

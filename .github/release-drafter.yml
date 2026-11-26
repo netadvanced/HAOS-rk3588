@@ -20,6 +20,8 @@ categories:
     label: 'board/khadas'
   - title: 'Generic aarch64'
     label: 'board/generic-aarch64'
+  - title: 'Orange Pi 5 Plus'
+    label: 'board/orangepi5plus'
   - title: 'Rock 5B'
     label: 'board/rock5b'
   - title: 'Documentation'

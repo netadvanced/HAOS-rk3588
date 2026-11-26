@@ -1,0 +1,41 @@
+From: HAOS rk3588 <noreply@localhost>
+Subject: [PATCH] dm: accept extra fields in the dm-verity status line
+
+With Linux 7.x the dm-verity INFO status is "V -" (or "V <n>" with FEC)
+instead of "V", so mounting any verity bundle fails with
+"Unexpected dm-verity status 'V -' (instead of '\0')". Accept the expected
+status followed by space-separated fields; a corrupted device ("C ...") is
+still rejected.
+
+---
+--- a/src/dm.c
++++ b/src/dm.c
+@@ -80,6 +80,19 @@
+ 	}
+ }
+ 
++/* Newer kernels append fields to the status line: Linux 7.x dm-verity
++ * reports e.g. "V -" (verified, no FEC corrections) instead of just "V".
++ * Accept the expected status followed by further space-separated fields. */
++static gboolean dm_status_ok(const gchar *status, const gchar *expected)
++{
++	gsize len = strlen(expected);
++
++	if (g_strcmp0(status, expected) == 0)
++		return TRUE;
++
++	return len > 0 && g_str_has_prefix(status, expected) && status[len] == ' ';
++}
++
+ gboolean r_dm_setup(RaucDM *dm, GError **error)
+ {
+ 	gboolean res = FALSE;
+@@ -235,7 +248,7 @@
+ 		res = FALSE;
+ 		goto out_remove_dm;
+ 	}
+-	if (g_strcmp0(setup.params, dmstatus_by_dmtype(dm->type)) != 0) {
++	if (!dm_status_ok(setup.params, dmstatus_by_dmtype(dm->type))) {
+ 		g_set_error(error,
+ 				G_FILE_ERROR,
+ 				G_FILE_ERROR_FAILED,
